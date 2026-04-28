@@ -9,7 +9,7 @@ import os
 # ----------------------------
 TELEGRAM_TOKEN = os.getenv("8631838501:AAGj-dyi23_Gi_bNh3XawwDVSNeAElXQc2g")
 OPENROUTER_KEY = os.getenv("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")
-WEBHOOK_URL = os.getenv("https://Retrai.onrender.com/webhook")
+WEBHOOK_URL = os.getenv("https://retrai.onrender.com/webhook")
 
 bot = Bot(token=TELEGRAM_TOKEN)
 app = Flask(__name__)
