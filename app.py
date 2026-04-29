@@ -28,7 +28,11 @@ memory = {}
 
 def ask_ai(uid, text):
     history = memory.setdefault(uid, [])
-    history.append({"role": "user", "parts": [text]})
+
+    history.append(types.Content(
+        role="user",
+        parts=[types.Part(text=text)]
+    ))
 
     for model_name in GEMINI_MODELS:
         try:
@@ -41,7 +45,10 @@ def ask_ai(uid, text):
                 )
             )
             reply = response.text
-            history.append({"role": "model", "parts": [reply]})
+            history.append(types.Content(
+                role="model",
+                parts=[types.Part(text=reply)]
+            ))
             memory[uid] = history[-10:]
             return reply
         except Exception as e:
@@ -50,9 +57,9 @@ def ask_ai(uid, text):
             if "429" in err or "quota" in err.lower() or "rate" in err.lower():
                 continue
             else:
-                return f"⚠️ Gemini Error [{model_name}]: {err}"
+                return f"⚠️ Gemini Error: {err}"
 
-    return "⚠️ All Gemini models failed. Check logs."
+    return "⚠️ All Gemini models failed."
 
 async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
     uid = update.effective_user.id
