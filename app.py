@@ -5,10 +5,10 @@ import os
 # ==========================
 # CONFIG
 # ==========================
-TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN", "YOUR_TELEGRAM_BOT_TOKEN")
-GEMINI_API = os.environ.get("GEMINI_API", "YOUR_GEMINI_API_KEY")
-OPENROUTER_API = os.environ.get("OPENROUTER_API", "YOUR_OPENROUTER_API_KEY")
-WEBHOOK_URL = os.environ.get("WEBHOOK_URL", "YOUR_RENDER_URL")
+TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN", 8631838501:AAGj-dyi23_Gi_bNh3XawwDVSNeAElXQc2g)
+GEMINI_API = os.environ.get("GEMINI_KEY", AIzaSyBlTHfELHg3yhF4hpmOYbLmwX4r98Ziq7Y)
+OPENROUTER_API = os.environ.get("OPENROUTER_KEY", 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)
+WEBHOOK_URL = os.environ.get("WEBHOOK_URL", https://retrai.onrender.com/webhook)
 
 SYSTEM_PROMPT = """
 You are a smart, friendly AI assistant.
