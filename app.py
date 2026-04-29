@@ -37,12 +37,12 @@ def send_typing(chat_id: int) -> None:
 
 
 # ==========================
-# GEMINI
+# GEMINI 2.5 FLASH (PRIMARY)
 # ==========================
 def ask_gemini(history: list, user_text: str) -> str:
     url = (
         f"https://generativelanguage.googleapis.com/v1beta/models/"
-        f"gemini-2.0-flash:generateContent?key={GEMINI_KEY}"
+        f"gemini-2.5-flash-preview-04-17:generateContent?key={GEMINI_KEY}"
     )
 
     contents = []
@@ -63,7 +63,7 @@ def ask_gemini(history: list, user_text: str) -> str:
 
 
 # ==========================
-# OPENROUTER (FALLBACK)
+# OPENROUTER (FALLBACK - FREE MODEL)
 # ==========================
 def ask_openrouter(history: list, user_text: str) -> str:
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]
@@ -125,7 +125,7 @@ def webhook():
 
         if text == "/start":
             memory.pop(user_id, None)
-            send_message(chat_id, "👋 Hello! I'm your AI assistant powered by Gemini.\n\nSend me any message!\n\nCommands:\n/start - Restart\n/clear - Clear memory\n/help - Help")
+            send_message(chat_id, "👋 Hello! I'm your AI assistant powered by Gemini 2.5 Flash.\n\nSend me any message!\n\nCommands:\n/start - Restart\n/clear - Clear memory\n/help - Help")
             return "ok"
 
         if text == "/clear":
