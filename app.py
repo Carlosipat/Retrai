@@ -75,7 +75,7 @@ def ask_ai(uid, text):
     messages.append({"role": "user", "content": text})
     try:
         res = client.chat.completions.create(
-            model="google/gemini-2.5-pro-exp-03-25:free",
+            model="deepseek/deepseek-r1:free",
             messages=messages,
             max_tokens=600
         )
