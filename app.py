@@ -13,7 +13,7 @@ OPENROUTER_KEY = os.environ.get("OPENROUTER_KEY", "")
 WEBHOOK_URL = os.environ.get("WEBHOOK_URL", "")
 
 SYSTEM_PROMPT = """
-STRICT FORMATTING RULES — follow these based on the request:
+Follow these based on the request:
 1. Use numbered lists (1. 2. 3.) for steps or sequences
 2. Use bullet points (• ) for features, items, or options
 3. Use HEADERS in ALL CAPS followed by a colon for section titles. Example: OVERVIEW:
