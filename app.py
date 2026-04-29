@@ -5,10 +5,10 @@ import os
 # ==========================
 # CONFIG
 # ==========================
-TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN", "")
-GEMINI_KEY = os.environ.get("GEMINI_KEY", "")
-OPENROUTER_KEY = os.environ.get("OPENROUTER_KEY", "")
-WEBHOOK_URL = os.environ.get("WEBHOOK_URL", "")
+TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN", 8631838501:AAGj-dyi23_Gi_bNh3XawwDVSNeAElXQc2g)
+GEMINI_KEY = os.environ.get("GEMINI_KEY", AIzaSyBlTHfELHg3yhF4hpmOYbLmwX4r98Ziq7Y)
+OPENROUTER_KEY = os.environ.get("OPENROUTER_KEY", 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)
+WEBHOOK_URL = os.environ.get("WEBHOOK_URL", https://retrai.onrender.com/)
 
 SYSTEM_PROMPT = """
 You are a smart, friendly AI assistant.
@@ -42,7 +42,7 @@ def send_typing(chat_id: int) -> None:
 def ask_gemini(history: list, user_text: str) -> str:
     url = (
         f"https://generativelanguage.googleapis.com/v1beta/models/"
-        f"gemini-1.5-flash:generateContent?key={GEMINI_KEY}"
+        f"gemini-2.0-flash:generateContent?key={GEMINI_KEY}"
     )
 
     contents = []
@@ -76,7 +76,7 @@ def ask_openrouter(history: list, user_text: str) -> str:
             "Authorization": f"Bearer {OPENROUTER_KEY}",
             "Content-Type": "application/json",
         },
-        json={"model": "openai/gpt-4o-mini", "messages": messages},
+        json={"model": "mistralai/mistral-7b-instruct:free", "messages": messages},
         timeout=30,
     )
     r.raise_for_status()
@@ -152,12 +152,17 @@ def webhook():
 # ==========================
 @app.route("/")
 def home():
+    def mask(val):
+        if not val:
+            return "❌ NOT SET"
+        return f"...{val[-6:]}"
+
     return (
         f"✅ Bot is running!<br><br>"
-        f"Telegram token ends: ...{TELEGRAM_TOKEN[-6:]}<br>"
-        f"Gemini key ends: ...{GEMINI_KEY[-6:]}<br>"
-        f"OpenRouter key ends: ...{OPENROUTER_KEY[-6:]}<br>"
-        f"Webhook URL: {WEBHOOK_URL}"
+        f"Telegram token: {mask(TELEGRAM_TOKEN)}<br>"
+        f"Gemini key: {mask(GEMINI_KEY)}<br>"
+        f"OpenRouter key: {mask(OPENROUTER_KEY)}<br>"
+        f"Webhook URL: {WEBHOOK_URL or '❌ NOT SET'}"
     )
 
 
