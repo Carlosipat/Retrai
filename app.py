@@ -2,7 +2,6 @@ from flask import Flask, request
 from telegram import Bot, Update
 from telegram.ext import Application, MessageHandler, filters, ContextTypes
 from google import genai
-from google.genai import types
 import os
 import asyncio
 
@@ -18,46 +17,27 @@ GEMINI_MODELS = [
     "gemini-1.5-pro",
 ]
 
-SYSTEM_PROMPT = "You are a helpful AI assistant."
-
 app = Flask(__name__)
 bot = Bot(token=TELEGRAM_TOKEN)
 ptb_app = Application.builder().token(TELEGRAM_TOKEN).build()
 
-memory = {}
-
-def ask_ai(uid, text):
-    history = memory.setdefault(uid, [])
-    history.append({"role": "user", "parts": [{"text": text}]})
-
+def ask_ai(text):
     for model_name in GEMINI_MODELS:
         try:
             response = client_gemini.models.generate_content(
                 model=model_name,
-                contents=history,
-                config=types.GenerateContentConfig(
-                    system_instruction=SYSTEM_PROMPT,
-                    max_output_tokens=800
-                )
+                contents=text
             )
-            reply = response.text
-            history.append({"role": "model", "parts": [{"text": reply}]})
-            memory[uid] = history[-10:]
-            return reply
+            return response.text
         except Exception as e:
             err = str(e)
             print(f"[{model_name}] Error: {err}")
-            if "429" in err or "quota" in err.lower() or "rate" in err.lower():
-                continue
-            else:
-                return f"⚠️ Error: {err}"
-
+            continue
     return "⚠️ All models failed. Try again later."
 
 async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    uid = update.effective_user.id
     text = update.message.text
-    reply = ask_ai(uid, text)
+    reply = ask_ai(text)
     await update.message.reply_text(reply)
 
 ptb_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle))
