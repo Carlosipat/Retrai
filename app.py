@@ -42,7 +42,7 @@ def send_typing(chat_id: int) -> None:
 def ask_gemini(history: list, user_text: str) -> str:
     url = (
         f"https://generativelanguage.googleapis.com/v1beta/models/"
-        f"gemini-2.5-flash-preview-04-17:generateContent?key={GEMINI_KEY}"
+        f"gemini-2.5-flash:generateContent?key={GEMINI_KEY}"
     )
 
     contents = []
@@ -75,8 +75,13 @@ def ask_openrouter(history: list, user_text: str) -> str:
         headers={
             "Authorization": f"Bearer {OPENROUTER_KEY}",
             "Content-Type": "application/json",
+            "HTTP-Referer": "https://retrai.onrender.com",
+            "X-Title": "Telegram AI Bot",
         },
-        json={"model": "mistralai/mistral-7b-instruct:free", "messages": messages},
+        json={
+            "model": "nvidia/nemotron-3-nano-30b-a3b:free",
+            "messages": messages
+        },
         timeout=30,
     )
     r.raise_for_status()
