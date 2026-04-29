@@ -5,10 +5,10 @@ import os
 # ==========================
 # CONFIG
 # ==========================
-TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN", "YOUR_TELEGRAM_BOT_TOKEN")
-GEMINI_KEY = os.environ.get("GEMINI_API", "YOUR_GEMINI_API_KEY")
-OPENROUTER_KEY = os.environ.get("OPENROUTER_API", "YOUR_OPENROUTER_API_KEY")
-WEBHOOK_URL = os.environ.get("WEBHOOK_URL", "YOUR_RENDER_URL")
+TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN", "")
+GEMINI_KEY = os.environ.get("GEMINI_KEY", "")
+OPENROUTER_KEY = os.environ.get("OPENROUTER_KEY", "")
+WEBHOOK_URL = os.environ.get("WEBHOOK_URL", "")
 
 SYSTEM_PROMPT = """
 You are a smart, friendly AI assistant.
@@ -42,7 +42,7 @@ def send_typing(chat_id: int) -> None:
 def ask_gemini(history: list, user_text: str) -> str:
     url = (
         f"https://generativelanguage.googleapis.com/v1beta/models/"
-        f"gemini-1.5-flash:generateContent?key={GEMINI_API}"
+        f"gemini-1.5-flash:generateContent?key={GEMINI_KEY}"
     )
 
     contents = []
@@ -73,7 +73,7 @@ def ask_openrouter(history: list, user_text: str) -> str:
     r = requests.post(
         "https://openrouter.ai/api/v1/chat/completions",
         headers={
-            "Authorization": f"Bearer {OPENROUTER_API}",
+            "Authorization": f"Bearer {OPENROUTER_KEY}",
             "Content-Type": "application/json",
         },
         json={"model": "openai/gpt-4o-mini", "messages": messages},
@@ -97,7 +97,6 @@ def get_reply(user_id: int, text: str) -> str:
             reply = ask_openrouter(history, text)
         except Exception as e2:
             print(f"[OpenRouter failed] {type(e2).__name__}: {e2}")
-            # Shows actual error in Telegram for debugging
             return f"⚠️ Debug Info:\n\nGemini error:\n{e}\n\nOpenRouter error:\n{e2}"
 
     history.append({"role": "user", "content": text})
@@ -156,8 +155,8 @@ def home():
     return (
         f"✅ Bot is running!<br><br>"
         f"Telegram token ends: ...{TELEGRAM_TOKEN[-6:]}<br>"
-        f"Gemini key ends: ...{GEMINI_API[-6:]}<br>"
-        f"OpenRouter key ends: ...{OPENROUTER_API[-6:]}<br>"
+        f"Gemini key ends: ...{GEMINI_KEY[-6:]}<br>"
+        f"OpenRouter key ends: ...{OPENROUTER_KEY[-6:]}<br>"
         f"Webhook URL: {WEBHOOK_URL}"
     )
 
