@@ -6,8 +6,8 @@ import os
 # CONFIG
 # ==========================
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN", "YOUR_TELEGRAM_BOT_TOKEN")
-GEMINI_KEY = os.environ.get("GEMINI_KEY", "YOUR_GEMINI_API_KEY")
-OPENROUTER_KEY = os.environ.get("OPENROUTER_KEY", "YOUR_OPENROUTER_API_KEY")
+GEMINI_KEY = os.environ.get("GEMINI_API", "YOUR_GEMINI_API_KEY")
+OPENROUTER_KEY = os.environ.get("OPENROUTER_API", "YOUR_OPENROUTER_API_KEY")
 WEBHOOK_URL = os.environ.get("WEBHOOK_URL", "YOUR_RENDER_URL")
 
 SYSTEM_PROMPT = """
@@ -92,12 +92,13 @@ def get_reply(user_id: int, text: str) -> str:
     try:
         reply = ask_gemini(history, text)
     except Exception as e:
-        print(f"[Gemini failed] {e} — trying OpenRouter")
+        print(f"[Gemini failed] {type(e).__name__}: {e}")
         try:
             reply = ask_openrouter(history, text)
         except Exception as e2:
-            print(f"[OpenRouter failed] {e2}")
-            return "Sorry, I'm having trouble reaching AI services right now. Please try again."
+            print(f"[OpenRouter failed] {type(e2).__name__}: {e2}")
+            # Shows actual error in Telegram for debugging
+            return f"⚠️ Debug Info:\n\nGemini error:\n{e}\n\nOpenRouter error:\n{e2}"
 
     history.append({"role": "user", "content": text})
     history.append({"role": "assistant", "content": reply})
@@ -123,24 +124,21 @@ def webhook():
         if not text:
             return "ok"
 
-        # Commands
         if text == "/start":
             memory.pop(user_id, None)
-            send_message(chat_id, "👋 Hello! I'm your AI assistant powered by Gemini.\n\nSend me any message and I'll help you!\n\nCommands:\n/start - Restart\n/clear - Clear memory\n/help - Show help")
+            send_message(chat_id, "👋 Hello! I'm your AI assistant powered by Gemini.\n\nSend me any message!\n\nCommands:\n/start - Restart\n/clear - Clear memory\n/help - Help")
             return "ok"
 
         if text == "/clear":
             memory.pop(user_id, None)
-            send_message(chat_id, "🗑️ Conversation history cleared! Let's start fresh.")
+            send_message(chat_id, "🗑️ Conversation history cleared!")
             return "ok"
 
         if text == "/help":
-            send_message(chat_id, "🤖 I'm an AI assistant.\n\nJust type any message and I'll reply!\n\nCommands:\n/start - Restart bot\n/clear - Clear chat memory\n/help - This message")
+            send_message(chat_id, "🤖 AI Assistant\n\nJust type any message!\n\nCommands:\n/start - Restart\n/clear - Clear memory\n/help - This message")
             return "ok"
 
-        # Show typing indicator
         send_typing(chat_id)
-
         reply = get_reply(user_id, text)
         send_message(chat_id, reply)
 
@@ -150,16 +148,24 @@ def webhook():
     return "ok"
 
 
+# ==========================
+# DEBUG ROUTE
+# ==========================
 @app.route("/")
 def home():
-    return "✅ Bot is running!"
+    return (
+        f"✅ Bot is running!<br><br>"
+        f"Telegram token ends: ...{TELEGRAM_TOKEN[-6:]}<br>"
+        f"Gemini key ends: ...{GEMINI_API[-6:]}<br>"
+        f"OpenRouter key ends: ...{OPENROUTER_API[-6:]}<br>"
+        f"Webhook URL: {WEBHOOK_URL}"
+    )
 
 
 # ==========================
 # START
 # ==========================
 if __name__ == "__main__":
-    # Register webhook
     resp = requests.get(
         f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/setWebhook",
         params={"url": f"{WEBHOOK_URL}/webhook"},
