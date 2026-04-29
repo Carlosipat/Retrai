@@ -148,7 +148,7 @@ def download_image_base64(file_url: str) -> str:
 def ask_gemini(history: list, user_text: str, image_b64: str = None) -> str:
     url = (
         f"https://generativelanguage.googleapis.com/v1beta/models/"
-        f"gemini-2.5-flash:generateContent?key={GEMINI_KEY}"
+        f"gemini-2.0-flash:generateContent?key={GEMINI_KEY}"
     )
 
     contents = []
@@ -207,7 +207,7 @@ def ask_openrouter(history: list, user_text: str) -> str:
             "X-Title": "Retrai",
         },
         json={
-            "model": "meta-llama/llama-3.1-8b-instruct:free",
+            "model": "google/gemma-2-9b-it:free",
             "messages": messages,
             "temperature": 0.8,
             "max_tokens": 4096,
